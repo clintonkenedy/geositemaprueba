@@ -1,7 +1,7 @@
 <template>
-  <q-layout view="hHh LpR fFf">
+  <q-layout view="hHh lpR fFf">
 
-    <q-header elevated class="bg-primary text-white">
+    <!-- <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
 
@@ -17,100 +17,43 @@
             unchecked-icon="light_mode" />
         </div>
       </q-toolbar>
-    </q-header>
+    </q-header> -->
 
-    <!-- <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered>
-    </q-drawer> -->
 
-    <q-drawer v-model="drawer" show-if-above :mini="miniState" @mouseover="miniState = false" @mouseout="miniState = true"
-      overlay :width="300" :breakpoint="500" bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
-      <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: 0 }">
-        <q-list>
-          <q-expansion-item v-model="expanded2" icon="perm_identity" label="Account settings" caption="John Doe">
-            <q-list class=" text-primary">
-              <q-item clickable v-ripple :active="link === 'inbox'" @click="link = 'inbox'"
-                active-class="bg-primary text-white">
-                <q-item-section avatar>
-                  <q-icon name="inbox" />
-                </q-item-section>
 
-                <q-item-section>Inbox</q-item-section>
-              </q-item>
-
-              <q-item clickable v-ripple :active="link === 'outbox'" @click="link = 'outbox'" active-class="my-menu-link">
-                <q-item-section avatar>
-                  <q-icon name="send" />
-                </q-item-section>
-
-                <q-item-section>Outbox</q-item-section>
-              </q-item>
-
-            </q-list>
-          </q-expansion-item>
-          <q-expansion-item v-model="expanded1" icon="perm_identity" label="Account settings" caption="John Doe">
-            <q-card>
-              <q-card-section>
-                Lorem
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="inbox" />
-            </q-item-section>
-
-            <q-item-section>
-              Inbox
-            </q-item-section>
-          </q-item>
-
-          <q-item active clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="star" />
-            </q-item-section>
-
-            <q-item-section>
-              Star
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="send" />
-            </q-item-section>
-
-            <q-item-section>
-              Send
-            </q-item-section>
-          </q-item>
-
-          <q-separator />
-
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="drafts" />
-            </q-item-section>
-
-            <q-item-section>
-              Drafts
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-scroll-area>
-    </q-drawer>
 
     <q-page-container>
+
       <router-view />
+
+      <!-- <q-page-sticky position="top-left" :offset="[18, 18]">
+          <q-fab square padding="sm" v-model="drawer" icon="keyboard_arrow_down" active-icon="keyboard_arrow_up"
+            direction="down" color="accent">
+            <q-fab-action square @click="onClick" color="primary" icon="person_add" />
+            <q-fab-action square @click="onClick" color="primary" icon="mail" />
+          </q-fab>
+        </q-page-sticky>
+        <q-page-sticky position="bottom-right" :offset="fabPos">
+
+          <q-fab icon="add" direction="up" color="accent" :disable="draggingFab" v-touch-pan.prevent.mouse="moveFab">
+            <q-fab-action square @click="onClick" color="primary" icon="person_add" :disable="draggingFab" />
+            <q-fab-action square @click="onClick" color="primary" icon="mail" :disable="draggingFab" />
+          </q-fab>
+        </q-page-sticky> -->
+
+
+
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white">
+
+    <!-- <q-footer elevated class="bg-grey-8 text-white">
       <q-toolbar>
         <q-toolbar-title>
 
           <div>Title</div>
         </q-toolbar-title>
       </q-toolbar>
-    </q-footer>
+    </q-footer> -->
 
   </q-layout>
 </template>
@@ -123,14 +66,31 @@ const $q = useQuasar()
 
 
 const leftDrawerOpen = ref(false);
-const drawer = ref(false);
+const drawer = ref(true);
 const miniState = ref(true);
 const dark = ref($q.dark.isActive);
 const expanded1 = ref(false);
 const expanded2 = ref(false);
 const link = ref('inbox');
+const fab1 = ref(true);
+const fabPos = ref([18, 18])
+const draggingFab = ref(false)
+
 const darkMode = (v) => {
   $q.dark.set(v);
+}
+$q.dark.set(false);
+function onClick() {
+  // console.log('Clicked on a fab action')
+}
+
+const moveFab = (ev) => {
+  draggingFab.value = ev.isFirst !== true && ev.isFinal !== true
+
+  fabPos.value = [
+    fabPos.value[0] - ev.delta.x,
+    fabPos.value[1] - ev.delta.y
+  ]
 }
 
 </script>

@@ -1,7 +1,6 @@
 <template>
   <q-page>
-    <!-- <Lmap></Lmap> -->
-
+    <Lmap></Lmap>
   </q-page>
 </template>
 

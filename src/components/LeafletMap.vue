@@ -5,13 +5,8 @@
     </div>
 
 
-    <q-page-sticky position="top-left" :offset="[18, 18]">
-      <q-fab square padding="xs" v-model="drawer" icon="construction" active-icon="keyboard_arrow_up" direction="down"
-        color="accent">
-        <q-fab-action square @click="onClick" color="primary" icon="print" />
-        <q-fab-action square @click="onClick" color="red" icon="backspace" />
-      </q-fab>
-    </q-page-sticky>
+    <HerramientaMap></HerramientaMap>
+    <!-- capass  -->
 
     <q-page-sticky position="top-right" :offset="[18, 18]">
 
@@ -19,10 +14,35 @@
 
         <div class="col q-ml-sm">
           <q-popup-proxy>
+            <q-banner>
+              Unfortunately, the credit card did not go through, please try again.
+
+            </q-banner>
+
+            <!-- <q-banner>
+
+                <q-card class="my-card">
+                  <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
+                    <div class="absolute-bottom text-subtitle2 text-center">
+                      Title
+                    </div>
+                  </q-img>
+                </q-card>
+              </q-banner> -->
+          </q-popup-proxy>
+          <q-tooltip anchor="bottom middle" self="center middle">
+            Imagenes
+          </q-tooltip>
+          <q-fab square padding="sm" icon="perm_media" active-icon="keyboard_arrow_up" direction="down" color="secondary">
+
+          </q-fab>
+        </div>
+        <div class="col q-ml-sm">
+          <q-popup-proxy>
             <q-card class="my-card">
 
               <q-card-section>
-                <div class="text-h6">Capas</div>
+                <div class="text-h6">Capas gaaaaaaaaaaaaa</div>
               </q-card-section>
 
               <q-card-section class="q-pt-none">
@@ -42,12 +62,38 @@
             <q-card class="my-card">
 
               <q-card-section>
-                <div class="text-h6">Our Changing Planet</div>
-                <div class="text-subtitle2">by John Doe</div>
+                <div class="text-h6">Capas</div>
+                <!-- <div class="text-subtitle2">by John Doe</div> -->
               </q-card-section>
 
-              <q-card-section class="q-pt-none">
-                <q-tree :nodes="simple" node-key="label" no-connectors v-model:expanded="expanded" />
+
+              <q-card-section class="q-pa-none">
+
+                <q-list>
+
+
+                  <q-expansion-item expand-separator icon="signal_wifi_off" label="Categoria Comercial">
+                    <q-card>
+                      <q-card-section class="q-pl-lg">
+                        <q-option-group @update:model-value="op" :options="options" type="checkbox" v-model="group" />
+
+                      </q-card-section>
+                    </q-card>
+                  </q-expansion-item>
+
+                  <q-expansion-item expand-separator icon="drafts" label="Categoria 2" header-class="text-purple">
+                    <q-card>
+                      <q-card-section>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos
+                        corrupti
+                        commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
+                        eveniet doloribus ullam aliquid.
+                      </q-card-section>
+                    </q-card>
+                  </q-expansion-item>
+
+
+                </q-list>
 
               </q-card-section>
             </q-card>
@@ -163,17 +209,10 @@
 
     </q-page-sticky>
 
+    <!-- editar  -->
 
-    <q-page-sticky position="bottom-right" :offset="fabPos">
+    <DibujoMap></DibujoMap>
 
-      <q-fab padding="md" icon="edit" direction="up" color="orange-10
-" :disable="draggingFab" v-touch-pan.prevent.mouse="moveFab">
-        <q-fab-action square @click="onClick" color="primary" icon="mdi-circle-medium" :disable="draggingFab" />
-        <q-fab-action square @click="onClick" color="primary" icon="mdi-vector-line" :disable="draggingFab" />
-        <q-fab-action square @click="onClick" color="primary" icon="mdi-shape-rectangle-plus" :disable="draggingFab" />
-        <q-fab-action square @click="onClick" color="primary" icon="mdi-shape-polygon-plus" :disable="draggingFab" />
-      </q-fab>
-    </q-page-sticky>
   </q-page>
 </template>
 
@@ -183,8 +222,11 @@ import 'leaflet/dist/leaflet.css'
 // import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
 import L, { marker } from 'leaflet'
 // import Lcontrol from 'leaflet.locatecontrol'
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 // import GeojsonService from 'pages/GeojsonService.js'
+import HerramientaMap from '../components/HerramientaMap.vue';
+import DibujoMap from '../components/DibujoMap.vue';
+
 
 const props = defineProps({
   markers: {
@@ -193,7 +235,18 @@ const props = defineProps({
     default: () => []
   }
 });
-const drawer = ref(true);
+const filter = ref('');
+const filterRef = ref(null);
+
+const selected = ref('Pleasant surroundings');
+const ticked = ref([]);
+
+// watch(ticked, () => {
+//   console.log(ticked.value);
+
+// });
+
+
 const capas = ref(true);
 const shape = ref('line');
 const fabPos = ref([18, 18])
@@ -201,61 +254,25 @@ const draggingFab = ref(false)
 
 const group = ref([]);
 const options = [
-  { label: 'Manzanas', value: 'MANZANAS_SEC_02' },
-  { label: 'Lotes', value: 'LOTES_SEC_02', },
-  { label: 'areas', value: 'LOTES_SEC_02', },
+  { label: 'Manzanas', value: 'mz sec 3' },
+  { label: 'Lotes', value: 'lote sec 3', },
   // { label: 'Picture uploaded', value: 'upload', }
 ]
 const expanded = ref(['Satisfied customers (with avatar)', 'Good food (with icon)']);
-const simple = [
-  {
-    label: 'Satisfied customers (with avatar)',
-    avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-    children: [
-      {
-        label: 'Good food (with icon)',
-        icon: 'restaurant_menu',
-        children: [
-          { label: 'Quality ingredients' },
-          { label: 'Good recipe' }
-        ]
-      },
-      {
-        label: 'Good service (disabled node with icon)',
-        icon: 'room_service',
-        disabled: true,
-        children: [
-          { label: 'Prompt attention' },
-          { label: 'Professional waiter' }
-        ]
-      },
-      {
-        label: 'Pleasant surroundings (with icon)',
-        icon: 'photo',
-        children: [
-          {
-            label: 'Happy atmosphere (with image)',
-            img: 'https://cdn.quasar.dev/img/logo_calendar_128px.png'
-          },
-          { label: 'Good table presentation' },
-          { label: 'Pleasing decor' }
-        ]
-      }
-    ]
-  }
-]
-const mapageo = ref(null);
-function onClick() {
-  // console.log('Clicked on a fab action')
+
+const myFilterMethod = (node, filter) => {
+  const filt = filter.toLowerCase()
+  return node.label && node.label.toLowerCase().indexOf(filt) > -1 && node.label.toLowerCase().indexOf('(*)') > -1
 }
 
-const moveFab = (ev) => {
-  draggingFab.value = ev.isFirst !== true && ev.isFinal !== true
+const resetFilter = () => {
+  filter.value = ''
+  filterRef.value.focus()
+}
 
-  fabPos.value = [
-    fabPos.value[0] - ev.delta.x,
-    fabPos.value[1] - ev.delta.y
-  ]
+
+const holaaaa = (e) => {
+  console.log("holaaa");
 }
 
 onMounted(() => {
@@ -316,11 +333,13 @@ const op = (e) => {
   } else {
 
     console.log("1+");
-    let manzanas = L.tileLayer.wms("http://192.168.0.10:8080/geoserver/EMSA_PUNO_S2/wms?", {
+    let manzanas = L.tileLayer.wms("http://192.168.0.10:8080/geoserver/EMSA_PUNO/wms?", {
       maxZoom: 22,
       layers: e,
       format: "image/png",
-      transparent: true
+      transparent: true,
+      tiled: true,
+
     }).addTo(map);
   }
 
@@ -417,9 +436,19 @@ const setMarkes = () => {
   height: calc(100vh - 0px);
 }
 
-.my-card {
+/* .my-card {
   width: 100%;
   max-width: 350px;
+} */
+
+.card-max {
+  width: 100%;
+  max-width: 350px;
+}
+
+.example-item {
+  height: 0px;
+  width: 90px;
 }
 </style>
 
